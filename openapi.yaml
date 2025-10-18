@@ -1,0 +1,38 @@
+openapi: 3.0.1
+info:
+  title: Markdown Render API
+  version: 1.0.0
+servers: [{ url: / }]
+paths:
+  /render:
+    post:
+      summary: Convert Markdown to sanitized HTML
+      parameters:
+        - in: query
+          name: pretty
+          schema: { type: integer, minimum: 0, maximum: 1 }
+          required: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [markdown]
+              properties:
+                markdown: { type: string }
+                strip_html: { type: boolean, default: false }
+            example:
+              markdown: "# Hello"
+              strip_html: false
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              example:
+                html: "<h1>Hello</h1>\n"
+                stats: { chars_in: 8, chars_out: 17 }
+                sanitized: true
+        "400": { description: bad request }
+        "429": { description: throttled }

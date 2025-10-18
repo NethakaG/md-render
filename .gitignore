@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.env.*
+
+# Editor/OS
+.vscode/
+.DS_Store
+
+# Build / Docker
+dist/
+build/
+*.log

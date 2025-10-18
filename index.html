@@ -1,0 +1,108 @@
+<!DOCTYPE html><meta charset="utf-8" />
+<title>Markdown → Sanitized HTML</title>
+<style>
+  body {
+    font-family: system-ui, Arial, sans-serif;
+    margin: 24px;
+    line-height: 1.4;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  textarea {
+    width: 100%;
+    height: 280px;
+  }
+  pre {
+    background: #f6f8fa;
+    padding: 12px;
+    overflow: auto;
+    border-radius: 6px;
+  }
+  .controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin: 12px 0;
+  }
+  .error {
+    color: #b00020;
+  }
+  iframe {
+    width: 100%;
+    height: 280px;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+  }
+  button {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #f3f3f3;
+  }
+</style>
+<h1>Markdown → Sanitized HTML</h1>
+<p>Paste Markdown, click Render, and preview the sanitized HTML.</p>
+<div class="row">
+  <div>
+    <h3>Markdown</h3>
+    <textarea id="md">
+# Hello
+
+This is *markdown* with **bold** and a [link](https://example.com).</textarea
+    >
+    <div class="controls">
+      <label><input type="checkbox" id="strip" /> Return plaintext too</label>
+      <button id="btn">Render</button>
+    </div>
+    <div id="err" class="error"></div>
+  </div>
+  <div>
+    <h3>Sanitized HTML (string)</h3>
+    <pre id="htmlOut"></pre>
+    <h3>Preview (sandboxed)</h3>
+    <iframe id="preview" sandbox="allow-same-origin"></iframe>
+  </div>
+</div>
+<script>
+  // For local dev, hit the service directly.
+  const GATEWAY_URL = "https://localhost:8243/md/1.0.0/render?pretty=1";
+  const mdEl = document.getElementById("md");
+  const stripEl = document.getElementById("strip");
+  const btn = document.getElementById("btn");
+  const errEl = document.getElementById("err");
+  const htmlOut = document.getElementById("htmlOut");
+  const preview = document.getElementById("preview");
+
+  btn.addEventListener("click", async () => {
+    errEl.textContent = "";
+    htmlOut.textContent = "";
+    preview.srcdoc = "";
+    const payload = { markdown: mdEl.value, strip_html: stripEl.checked };
+    try {
+      const res = await fetch(GATEWAY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(text);
+      }
+      if (!res.ok) throw new Error(data.detail || res.statusText);
+      htmlOut.textContent = data.html;
+      preview.srcdoc = `<!doctype html><meta charset="utf-8"><body>${data.html}</body>`;
+    } catch (e) {
+      errEl.textContent = e.message || "Request failed";
+    }
+  });
+</script>
