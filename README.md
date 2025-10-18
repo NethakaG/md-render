@@ -174,7 +174,7 @@ Enable CORS for your GUI origin (e.g., `http://localhost:5500`):
 - **Gateway URL:** Clients call `https://localhost:8243/md/1.0.0/render`. WSO2 forwards to my app.
 - **Backend endpoint:** Set to `http://host.docker.internal:8000` (because the FastAPI app runs on my host via uvicorn).
 - **TLS termination:** HTTPS handled at the gateway; the app stays on HTTP.
-- **Throttling:** Applied a demo policy (e.g., `10PerMin`) so bursts get a `429` without reaching the app.
+- **Throttling:** Applied a demo policy (e.g., `2PerMin`) so bursts get a `429` without reaching the app.
 - **CORS at the edge:** Allowed my GUI origin (e.g., `http://localhost:5500`) and header `Content-Type` so the browser can call the API.
 - **Versioning:** Context `md` + Version `1.0.0` → clean URL `/md/1.0.0/render` that I can upgrade later.
 - **Lifecycle:** After changes I **Save → Deploy → Publish** to roll out safely.
