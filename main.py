@@ -5,7 +5,7 @@ from typing import Optional
 from markdown_it import MarkdownIt
 import bleach
 
-MAX_BYTES = 50 * 1024  # 50 KB
+MAX_BYTES = 50 * 1024
 
 md = MarkdownIt("commonmark", {"html": False}).enable("table").enable("strikethrough")
 
@@ -34,7 +34,6 @@ class RenderOut(BaseModel):
 
 app = FastAPI(title="Markdown → HTML Microservice", version="1.0.0")
 
-# Dev-only CORS so the local GUI can call http://localhost:8000
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], allow_methods=["POST"], allow_headers=["*"]
@@ -74,3 +73,4 @@ async def render_markdown(
         resp.text = bleach.clean(clean, tags=[], strip=True)
 
     return resp
+
